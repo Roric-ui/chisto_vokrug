@@ -31,7 +31,121 @@ const markersContainer = document.getElementById('markersContainer');
 const mainImage = document.getElementById('mainImage');
 const clearMarkersBtn = document.querySelector('.btn-clear');
 
-// === Конвертация ===
+// === ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: СЖАТИЕ ФОТО ===
+function compressImage(file, maxSizeKB = 500) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(event) {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function() {
+                // Создаем Canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Вычисляем новые пропорции (ограничиваем ширину до 1200px, чтобы не было слишком тяжелым)
+                const MAX_WIDTH = 1200;
+                const MAX_HEIGHT = 1200;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Пытаемся сжать до 0.5 МБ (500 КБ)
+                let quality = 0.7; // Начальное качество 70%
+                let compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                
+                // Если все еще слишком много, снижаем качество пока не уложимся в лимит
+                while (compressedDataUrl.length > maxSizeKB * 1024 && quality > 0.1) {
+                    quality -= 0.05;
+                    compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                }
+
+                resolve(compressedDataUrl);
+            };
+            img.onerror = reject;
+        };
+        reader.onerror = reject;
+    });
+}
+
+// === Файлы ===
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+async function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+        alert('Выберите изображение');
+        resetFilePreview();
+        return;
+    }
+    
+    attachedFile = file;
+    statusText.textContent = 'Сжатие фото... (подождите)';
+    statusText.className = 'status-text';
+
+    try {
+        // Сжимаем фото до 500 КБ с помощью нашей новой функции
+        attachedFileDataURL = await compressImage(file, 500);
+
+        // Отображаем превью
+        previewImage.src = attachedFileDataURL;
+        fileName.textContent = file.name;
+        // В скобках показываем реальный вес файла + сжатый
+        const compressedSizeKB = Math.round(attachedFileDataURL.length / 1024);
+        fileSize.textContent = formatFileSize(file.size) + ` (сжато: ${compressedSizeKB} KB)`;
+        
+        filePreview.classList.remove('hidden');
+        statusText.textContent = 'Файл готов: ' + file.name;
+        statusText.className = 'status-text';
+        fileDropZone.classList.remove('error');
+    } catch (error) {
+        alert('Ошибка при обработке изображения: ' + error.message);
+        resetFilePreview();
+    }
+}
+
+function resetFilePreview() {
+    attachedFile = null;
+    attachedFileDataURL = null;
+    filePreview.classList.add('hidden');
+    previewImage.src = '#';
+    fileName.textContent = '';
+    fileSize.textContent = '';
+    fileInput.value = '';
+    statusText.textContent = '';
+    statusText.className = 'status-text';
+    fileDropZone.classList.remove('error');
+}
+
+function showSuccessMessageWithTimeout(text) {
+    if (successTimeout) clearTimeout(successTimeout);
+    successMessage.classList.add('show');
+    successSub.textContent = text;
+    successTimeout = setTimeout(() => successMessage.classList.remove('show'), 3000);
+}
+
+// === Конвертация координат ===
 function convertToRangeX(percent) {
     return RANGE_X_MIN + (percent / 100) * (RANGE_X_MAX - RANGE_X_MIN);
 }
@@ -40,7 +154,7 @@ function convertToRangeY(percent) {
     return RANGE_Y_MIN + (percent / 100) * (RANGE_Y_MAX - RANGE_Y_MIN);
 }
 
-// === Метки (ограничение — 1) ===
+// === Метки ===
 function addMarker(x, y) {
     if (markers.length >= 1) {
         markers = [];
@@ -97,69 +211,7 @@ imageWrapper.addEventListener('click', function(e) {
 
 clearMarkersBtn.addEventListener('click', clearMarkers);
 
-// === Файлы ===
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
-
-function getFileExtension(filename) {
-    return filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2);
-}
-
-function sanitizeFilename(name) {
-    return name.replace(/[<>:"/\\|?*]/g, '_').trim() || 'file';
-}
-
-function generateBaseName() {
-    return sanitizeFilename(topicInput.value.trim() || 'заявка');
-}
-
-function handleFile(file) {
-    if (!file || !file.type.startsWith('image/')) {
-        alert('Выберите изображение');
-        resetFilePreview();
-        return;
-    }
-    attachedFile = file;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        attachedFileDataURL = e.target.result;
-        previewImage.src = attachedFileDataURL;
-        fileName.textContent = file.name;
-        fileSize.textContent = formatFileSize(file.size);
-        filePreview.classList.remove('hidden');
-        statusText.textContent = 'Файл готов: ' + file.name;
-        statusText.className = 'status-text';
-        fileDropZone.classList.remove('error');
-    };
-    reader.readAsDataURL(file);
-}
-
-function resetFilePreview() {
-    attachedFile = null;
-    attachedFileDataURL = null;
-    filePreview.classList.add('hidden');
-    previewImage.src = '#';
-    fileName.textContent = '';
-    fileSize.textContent = '';
-    fileInput.value = '';
-    statusText.textContent = '';
-    statusText.className = 'status-text';
-    fileDropZone.classList.remove('error');
-}
-
-function showSuccessMessageWithTimeout(text) {
-    if (successTimeout) clearTimeout(successTimeout);
-    successMessage.classList.add('show');
-    successSub.textContent = text;
-    successTimeout = setTimeout(() => successMessage.classList.remove('show'), 3000);
-}
-
-// === Отправка (без скачивания файлов) ===
+// === Отправка заявки ===
 async function readText() {
     const text = textarea.value.trim();
 
@@ -197,13 +249,12 @@ async function readText() {
     statusText.className = 'status-text';
 
     try {
-        // Сохраняем заявку в localStorage
         var issues = JSON.parse(localStorage.getItem('issues') || '[]');
         issues.push({
             id: Date.now(),
             topic: topicInput.value.trim(),
             description: textarea.value.trim(),
-            image: attachedFileDataURL,
+            image: attachedFileDataURL, // ТЕПЕРЬ ТУТ ЛЕЖИТ СЖАТОЕ ФОТО (до 500 КБ)
             coordinates: markers.length > 0 ? {
                 x: markers[0].xConverted.toFixed(6),
                 y: markers[0].yConverted.toFixed(6)
