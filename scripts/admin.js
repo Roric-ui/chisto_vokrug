@@ -33,9 +33,8 @@ if (activeIssues.length === 0) {
         `;
 
         var doneBtn = card.querySelector('.btn-done');
-        var statusEl = card.querySelector('.issue-status');
 
-        doneBtn.addEventListener('click', function() {
+        doneBtn.onclick = function() {
             var allIssues = JSON.parse(localStorage.getItem('issues') || '[]');
             var found = allIssues.find(function(i) { return i.id === issue.id; });
             if (found) {
@@ -51,31 +50,68 @@ if (activeIssues.length === 0) {
                     }
                 }, 300);
             }
-        });
+        };
 
         grid.appendChild(card);
 
-        // Открытие фото в модалке
-var issueImage = card.querySelector('.issue-image');
-if (issueImage) {
-    issueImage.style.cursor = 'pointer';
-    issueImage.addEventListener('click', function() {
-        var modal = document.getElementById('imageModal');
-        var modalImg = document.getElementById('modalImage');
-        modal.style.display = 'flex';
-        modalImg.src = issue.image;
-        modalImg.classList.remove('zoomed');
-    });
-}
+        // ОТКРЫТИЕ ФОТО В МОДАЛКЕ
+        var issueImage = card.querySelector('.issue-image');
+        if (issueImage) {
+            issueImage.style.cursor = 'pointer';
+            issueImage.onclick = function() {
+                var modal = document.getElementById('imageModal');
+                var modalImg = document.getElementById('modalImage');
+                
+                modal.style.display = 'flex';
+                modalImg.src = issue.image;
+                
+                // Сбрасываем зум при открытии новой картинки
+                scale = 1;
+                modalImg.style.transform = 'scale(1)';
+                modalImg.style.cursor = 'zoom-in';
+            };
+        }
     });
 }
 
-// ========== МОДАЛКА ФОТО ==========
+// ========== МОДАЛКА ФОТО (ЗУМ И ЗАКРЫТИЕ) ==========
 var imageModal = document.getElementById('imageModal');
 var modalImage = document.getElementById('modalImage');
+var modalCloseBtn = document.getElementById('modalImageClose');
 var scale = 1;
 
-modalImage.addEventListener('wheel', function(e) {
+// 1. ФУНКЦИЯ ЗАКРЫТИЯ (чтобы не дублировать код)
+function closeImageModal() {
+    imageModal.style.display = 'none';
+    scale = 1;
+    modalImage.style.transform = 'scale(1)';
+    modalImage.style.cursor = 'zoom-in';
+}
+
+// 2. КНОПКА ЗАКРЫТИЯ (КРЕСТИК)
+if (modalCloseBtn) {
+    modalCloseBtn.onclick = function(e) {
+        e.stopPropagation(); // Не даем клику уйти на фон
+        closeImageModal();
+    };
+}
+
+// 3. ЗАКРЫТИЕ ПО КЛИКУ НА ЗАТЕМНЕНИЕ
+imageModal.onclick = function(e) {
+    if (e.target === imageModal) {
+        closeImageModal();
+    }
+};
+
+// 4. ЗАКРЫТИЕ ПО КЛАВИШЕ ESC
+document.onkeydown = function(e) {
+    if (e.key === 'Escape' && imageModal.style.display === 'flex') {
+        closeImageModal();
+    }
+};
+
+// 5. ЗУМ КОЛЕСИКОМ МЫШИ
+modalImage.onwheel = function(e) {
     e.preventDefault();
     if (e.deltaY < 0) {
         scale = Math.min(scale + 0.2, 4);
@@ -83,35 +119,21 @@ modalImage.addEventListener('wheel', function(e) {
         scale = Math.max(scale - 0.2, 1);
     }
     modalImage.style.transform = 'scale(' + scale + ')';
-    if (scale > 1) {
-        modalImage.classList.add('zoomed');
-        modalImage.style.cursor = 'zoom-out';
-    } else {
-        modalImage.classList.remove('zoomed');
-        modalImage.style.cursor = 'zoom-in';
-    }
-});
+    modalImage.style.cursor = scale > 1 ? 'zoom-out' : 'zoom-in';
+};
 
-imageModal.addEventListener('click', function(e) {
-    if (e.target === imageModal) {
-        imageModal.style.display = 'none';
-        scale = 1;
-        modalImage.style.transform = 'scale(1)';
-        modalImage.classList.remove('zoomed');
-    }
-});
-
-modalImage.addEventListener('click', function(e) {
+// 6. КЛИК ПО САМОМУ ФОТО (УВЕЛИЧИТЬ ИЛИ СБРОСИТЬ)
+modalImage.onclick = function(e) {
     e.stopPropagation();
     if (scale > 1) {
+        // Если уже увеличено - сбрасываем
         scale = 1;
         modalImage.style.transform = 'scale(1)';
-        modalImage.classList.remove('zoomed');
         modalImage.style.cursor = 'zoom-in';
     } else {
+        // Если не увеличено - увеличиваем в 2 раза
         scale = 2;
         modalImage.style.transform = 'scale(2)';
-        modalImage.classList.add('zoomed');
         modalImage.style.cursor = 'zoom-out';
     }
-});
+};
