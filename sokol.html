@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сокол — Чистота Вокруг</title>
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+
+<section class="hero sokol-active" id="hero">
+    <a href="index.html">
+        <img src="image/chistotavokryg_head.svg" alt="Чистота вокруг" class="hero-logo-fixed" id="heroLogo" draggable="false">
+    </a>
+    <div class="hero-content">
+        <h1>Сокол</h1>
+        <p class="hero-subtitle">Ваше местоположение — <strong>Сокол</strong>. Здесь вы можете сообщать о проблемах и следить за благоустройством.</p>
+        <a href="report.html" class="sokol-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Сообщить о проблеме
+        </a>
+    </div>
+</section>
+
+<header class="floating-header" id="floatingHeader">
+    <button class="fh-burger" id="fhBurger" title="Меню" aria-label="Открыть меню">
+        <svg class="burger-icon" viewBox="0 0 24 24">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+    </button>
+    <img src="image/chistotavokryg_head_simple.svg" alt="Чистота вокруг" class="fh-logo-full">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <button class="fh-btn" id="floatingCityBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="10" r="3"/>
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            </svg>
+            Сокол
+        </button>
+        <a href="report.html" class="fh-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Сообщить о проблеме
+        </a>
+    </div>
+</header>
+
+<nav class="glass-menu" id="glassMenu">
+    <a href="index.html" class="glass-menu-link">На главную</a>
+    <a href="#map" class="glass-menu-link">Карта</a>
+</nav>
+
+<section class="map-section" id="map">
+    <div class="container">
+        <h2 class="section-title">Карта проблем</h2>
+        <p class="map-subtitle">Здесь отображаются все текущие проблемы выбранного местоположения.</p>
+        <div class="map-block">
+            <div class="image-wrapper" id="mapImageWrapper">
+                <img
+                    class="falcon-img"
+                    src="image/карта_сокол.png"
+                    alt="Карта Сокола"
+                    id="mapMainImage"
+                >
+                <div id="mapMarkersContainer"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand-col">
+                <img src="image/cleanteam_logo1big.svg" alt="команда лого" class="footer-logo-img" draggable="false">
+            </div>
+            <div class="footer-col">
+                <h4>Платформа</h4>
+                <ul>
+                    <li><a href="#">Карта проблем</a></li>
+                    <li><a href="#">Как сообщить</a></li>
+                    <li><a href="#">Статистика</a></li>
+                    <li><a href="#">API для разработчиков</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>О проекте</h4>
+                <ul>
+                    <li><a href="#">Команда</a></li>
+                    <li><a href="#">Партнёры</a></li>
+                    <li><a href="#">Вакансии</a></li>
+                    <li><a href="#">Блог</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Для администрации</h4>
+                <ul>
+                    <li><a href="#" id="footerAdminLink">Вход для администратора</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Мы в соцсетях</h4>
+                <div class="footer-social">
+                    <a href="#" aria-label="Telegram"><img src="image/telegram-svgrepo-com.svg" alt="Telegram"></a>
+                    <a href="#" aria-label="VK"><img src="image/vk-svgrepo-com.svg" alt="VK"></a>
+                    <a href="#" aria-label="VK Video"><img src="image/MAX.svg" alt="VK Video"></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 чистота вокруг &middot; Бета-версия</span>
+            <div class="footer-bottom-links">
+                <a href="#">Политика конфиденциальности</a>
+                <a href="#">Пользовательское соглашение</a>
+                <span class="footer-tagline">Сделаем мир чище!</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<button class="scroll-top-btn" id="scrollTopBtn" title="Наверх">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"/>
+    </svg>
+</button>
+
+<div class="modal-overlay" id="adminModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Вход для администратора</h2>
+            <button class="modal-close" id="adminModalClose">✕</button>
+        </div>
+        <div class="form-group">
+            <label for="adminLogin">Логин</label>
+            <input type="text" id="adminLogin" class="modal-search" placeholder="Введите логин">
+        </div>
+        <div class="form-group">
+            <label for="adminPassword">Пароль</label>
+            <input type="password" id="adminPassword" class="modal-search" placeholder="Введите пароль">
+        </div>
+        <div class="admin-error" id="adminError" style="display: none; color: #dc3545; font-size: 13px; text-align: center; margin-top: 8px;">Неверный логин или пароль</div>
+        <button class="modal-submit" id="adminSubmit">Войти</button>
+    </div>
+</div>
+
+<script src="scripts/sokol.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявки — Чистота Вокруг</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+
+<header class="floating-header visible">
+    <a href="index.html" class="fh-logo-full">
+        <img src="image/chistotavokryg_head_simple.svg" alt="Чистота вокруг">
+    </a>
+    <a href="index.html" class="fh-btn">На главную</a>
+</header>
+
+<section class="admin-page">
+    <div class="container">
+        <h1 class="section-title" id="adminTitle">Заявки — Сокол</h1>
+        <div class="issues-grid" id="issuesGrid"></div>
+    </div>
+</section>
+
+<script src="scripts/admin.js"></script>
+<div class="modal-overlay" id="imageModal" style="display: none; z-index: 10000;">
+    <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+        <img id="modalImage" src="#" alt="Фото заявки" style="max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 12px; cursor: zoom-in; transition: transform 0.2s;">
+    </div>
+</div>
+</body>
+</html>

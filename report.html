@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание заявки · Городской Патруль</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/report.css">
+    <script src="scripts/report.js" defer></script>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Левая часть: логотип + карта + метки -->
+        <div class="falcon-block">
+            <img src="image/chistotavokryg_head_simple.svg" alt="Чистота вокруг" class="report-logo" draggable="false">
+
+            <div class="image-wrapper" id="imageWrapper">
+                <img
+                    class="falcon-img"
+                    src="image/карта_сокол.png"
+                    alt="Сокол"
+                    id="mainImage"
+                >
+                <div id="markersContainer"></div>
+            </div>
+
+            <div class="marker-controls">
+                <button class="btn-clear" id="clearMarkersBtn">Убрать метку</button>
+            </div>
+        </div>
+
+        <!-- Правая часть: форма -->
+        <div class="form-wrapper">
+            <h2>
+                 Создание заявки
+                <span>Новая: Сокол</span>
+            </h2>
+
+            <div class="form-group">
+                <label for="topicInput">
+                    Тема заявки <span class="required">*</span>
+                </label>
+                <input type="text" id="topicInput" placeholder="Например: сломанная скамейка">
+            </div>
+
+            <div class="form-group">
+                <label for="textInput">Описание заявки</label>
+                <textarea id="textInput" placeholder="Подробно опишите проблему…"></textarea>
+            </div>
+
+            <div class="file-section" id="fileDropZone">
+                <input type="file" id="fileInput" accept="image/*">
+                <span class="icon"></span>
+                <div class="hint">
+                    <strong>Прикрепите или перетащите</strong> фото того, что необходимо исправить
+                </div>
+                <div class="sub-hint">PNG, JPG, GIF, WEBP</div>
+            </div>
+
+            <div class="file-preview hidden" id="filePreview">
+                <img id="previewImage" src="#" alt="Превью">
+                <div class="file-info">
+                    <div class="name" id="fileName">file.png</div>
+                    <div class="size" id="fileSize">0 KB</div>
+                </div>
+                <button class="remove-file" id="removeFileBtn">✕ Удалить</button>
+            </div>
+
+            <button class="btn-submit" id="readBtn">Отправить</button>
+
+            <div class="status-text" id="statusText"></div>
+
+            <div class="success-message" id="successMessage">
+                <span class="big-icon">✅</span>
+                <div class="title">Заявка отправлена</div>
+                <div class="sub" id="successSub">Ваша заявка успешно отправлена</div>
+            </div>
+
+            <div class="result" id="result">
+                <span class="success-icon">✅</span>
+                <span>Файлы успешно скачаны</span>
+                <div class="file-info-result" id="fileResultInfo"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
