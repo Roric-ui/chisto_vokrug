@@ -22,11 +22,16 @@
     </div>
 </section>
 
-<script src="scripts/admin.js"></script>
-<div class="modal-overlay" id="imageModal" style="display: none; z-index: 10000;">
-    <div style="position: relative; max-width: 90vw; max-height: 90vh;">
-        <img id="modalImage" src="#" alt="Фото заявки" style="max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 12px; cursor: zoom-in; transition: transform 0.2s;">
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ ПРОСМОТРА ФОТО -->
+<div class="modal-overlay" id="imageModal">
+    <div class="modal-image-wrapper">
+        <!-- Кнопка закрытия -->
+        <button class="modal-close-btn" id="modalImageClose">✕</button>
+        <!-- Картинка -->
+        <img id="modalImage" src="#" alt="Фото заявки">
     </div>
 </div>
+
+<script src="scripts/admin.js"></script>
 </body>
 </html>
