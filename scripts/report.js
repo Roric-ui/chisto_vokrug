@@ -159,58 +159,9 @@ function showSuccessMessageWithTimeout(text) {
     successTimeout = setTimeout(() => successMessage.classList.remove('show'), 3000);
 }
 
-// === Скачивание изображения с метками ===
-function downloadCurrentImageWithMarkers(baseName) {
-    return new Promise((resolve, reject) => {
-        const img = mainImage;
-        function createAndDownload() {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth || img.width;
-            canvas.height = img.naturalHeight || img.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            markers.forEach(marker => {
-                const x = (marker.x / 100) * canvas.width;
-                const y = (marker.y / 100) * canvas.height;
-                const gradient = ctx.createRadialGradient(x, y, 0, x, y, 20);
-                gradient.addColorStop(0, 'rgba(220,50,50,0.5)');
-                gradient.addColorStop(1, 'rgba(220,50,50,0)');
-                ctx.beginPath();
-                ctx.arc(x, y, 20, 0, 2 * Math.PI);
-                ctx.fillStyle = gradient;
-                ctx.fill();
-                ctx.beginPath();
-                ctx.arc(x, y, 13, 0, 2 * Math.PI);
-                ctx.fillStyle = 'rgba(220,50,50,0.85)';
-                ctx.fill();
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 3;
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(x, y, 5, 0, 2 * Math.PI);
-                ctx.fillStyle = 'white';
-                ctx.fill();
-            });
-            const link = document.createElement('a');
-            link.download = baseName + '_с_метками.png';
-            link.href = canvas.toDataURL('image/png');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            resolve();
-        }
-        if (img.complete) createAndDownload();
-        else {
-            img.onload = createAndDownload;
-            img.onerror = () => reject(new Error('Не удалось загрузить изображение'));
-        }
-    });
-}
-
-// === Отправка ===
+// === Отправка (без скачивания файлов) ===
 async function readText() {
     const text = textarea.value.trim();
-    const baseName = generateBaseName();
 
     textarea.classList.remove('error');
     topicInput.classList.remove('error');
@@ -245,47 +196,7 @@ async function readText() {
     statusText.textContent = 'Отправка заявки...';
     statusText.className = 'status-text';
 
-    let downloadedCount = 0;
     try {
-        if (attachedFile && attachedFileDataURL) {
-            const ext = getFileExtension(attachedFile.name);
-            const link = document.createElement('a');
-            link.href = attachedFileDataURL;
-            link.download = baseName + '_оригинал.' + ext;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            downloadedCount++;
-        }
-        try {
-            await downloadCurrentImageWithMarkers(baseName);
-            downloadedCount++;
-        } catch (e) { console.warn(e); }
-        if (markers.length > 0) {
-            let content = 'Координаты меток\n\n';
-            markers.forEach(m => content += `Долгота: ${m.xConverted.toFixed(6)}\nШирота: ${m.yConverted.toFixed(6)}\n\n`);
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = baseName + '_координаты.txt';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-            downloadedCount++;
-        }
-        if (text) {
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = baseName + '.txt';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-            downloadedCount++;
-        }
-
         // Сохраняем заявку в localStorage
         var issues = JSON.parse(localStorage.getItem('issues') || '[]');
         issues.push({
@@ -302,7 +213,7 @@ async function readText() {
         });
         localStorage.setItem('issues', JSON.stringify(issues));
 
-        showSuccessMessageWithTimeout('Тема: ' + topicInput.value.trim() + ' | Файлов: ' + downloadedCount);
+        showSuccessMessageWithTimeout('Тема: ' + topicInput.value.trim() + ' | Заявка сохранена');
         statusText.textContent = 'Заявка отправлена!';
         statusText.className = 'status-text success';
         textarea.value = '';
