@@ -207,6 +207,7 @@ a {
     padding: 80px 20px;
     color: #999;
     font-size: 15px;
+    grid-column: 1 / -1;
 }
 
 /* ========== КОНТЕЙНЕР ========== */
@@ -214,6 +215,65 @@ a {
     max-width: 1120px;
     margin: 0 auto;
     padding: 0 32px;
+}
+
+/* ========== НОВЫЕ СТИЛИ МОДАЛЬНОГО ОКНА ========== */
+#imageModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: none; /* Скрыто по умолчанию */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10000;
+}
+
+#imageModal .modal-image-wrapper {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+#imageModal .modal-close-btn {
+    position: absolute;
+    top: -48px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a;
+    transition: transform 0.2s, background 0.2s;
+    z-index: 10001;
+}
+
+#imageModal .modal-close-btn:hover {
+    background: #ffffff;
+    transform: scale(1.1);
+}
+
+#modalImage {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 12px;
+    cursor: zoom-in;
+    transition: transform 0.2s;
+    user-select: none;
+}
+
+#modalImage.zoomed {
+    cursor: zoom-out;
 }
 
 /* ========== АДАПТИВ ========== */
@@ -238,33 +298,4 @@ a {
     .section-title {
         font-size: 24px;
     }
-}
-
-.empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    color: #999;
-    font-size: 15px;
-    grid-column: 1 / -1;
-}
-
-/* ========== МОДАЛКА ФОТО ========== */
-#imageModal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-#modalImage {
-    user-select: none;
-}
-
-#modalImage.zoomed {
-    transform: scale(2);
-    cursor: zoom-out;
 }
